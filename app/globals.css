@@ -1,128 +1,98 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* 1. نظام الألوان والهوية البصرية (Theme) */
+@theme {
+  /* ألوان عميقة ومهنية (Slate & Indigo) */
+  --color-bg-main: #020617;        /* أسود ليلي عميق */
+  --color-bg-card: #0f172a;        /* أزرق غامق للبطاقات */
+  --color-accent: #38bdf8;         /* أزرق سماوي برمجياتي */
+  --color-success: #10b981;        /* أخضر للإنجازات */
+  
+  /* الخطوط: مزيج بين خط احترافي وخط برمجيات (Mono) */
+  --font-sans: "Inter", "Noto Sans Arabic", sans-serif;
+  --font-mono: "Fira Code", "JetBrains Mono", monospace;
+
+  /* مسافات ناعمة ومتجاوبة */
+  --spacing-fluid: clamp(1.5rem, 4vw, 4rem);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+/* 2. القواعد الأساسية (Base) - لضمان ثبات التصميم */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-tap-highlight-color: transparent;
+    /* حجم خط ديناميكي يتكيف مع الشاشة */
+    font-size: clamp(15px, 1vw, 18px);
+  }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  body {
+    @apply antialiased bg-bg-main text-slate-300;
+    text-align: start; /* قاعدة ذهبية لـ RTL/LTR */
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* تحسينات للغة العربية (RTL) */
+  :lang(ar) {
+    font-family: var(--font-sans);
+    letter-spacing: 0;
+    line-height: 1.8;
+  }
+
+  /* تحسينات للغات اللاتينية (LTR) */
+  :lang(en), :lang(fr) {
+    font-family: var(--font-sans);
+    letter-spacing: -0.01em;
+  }
+
+  /* تنسيق الروابط المهني */
+  a {
+    @apply transition-all duration-300 ease-in-out hover:text-accent;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
-}
-
-.hero-gradient {
-  background: linear-gradient(90deg, #86efac 0%, #4ade80 45%, #22c55e 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
-
-.terminal-bg,
-.terminal-grid,
-.terminal-scanline,
-.terminal-cursor-glow {
-  position: absolute;
-  inset: 0;
-}
-
-.terminal-bg {
-  background: radial-gradient(circle at 50% 120%, #052e16 0%, #010302 52%, #000 100%);
-}
-
-.terminal-grid {
-  opacity: 0.3;
-  background-image:
-    linear-gradient(rgba(34, 197, 94, 0.16) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(34, 197, 94, 0.12) 1px, transparent 1px);
-  background-size: 30px 30px;
-}
-
-.terminal-scanline {
-  opacity: 0.1;
-  background: repeating-linear-gradient(
-    to bottom,
-    rgba(134, 239, 172, 0.16),
-    rgba(134, 239, 172, 0.16) 1px,
-    transparent 2px,
-    transparent 5px
-  );
-  animation: scan 10s linear infinite;
-}
-
-.terminal-cursor-glow {
-  mix-blend-mode: screen;
-  background: radial-gradient(
-    circle 360px at var(--mouse-x, 50%) var(--mouse-y, 50%),
-    rgba(74, 222, 128, 0.35),
-    rgba(34, 197, 94, 0.2) 35%,
-    rgba(34, 197, 94, 0) 72%
-  );
-}
-
-@keyframes scan {
-  0% {
-    transform: translateY(-20%);
+/* 3. المكونات (Components) - لتقليل تكرار الكود */
+@layer components {
+  /* الحاوية المركزية للموقع */
+  .portfolio-container {
+    @apply mx-auto w-full max-w-6xl;
+    padding-inline: var(--spacing-fluid);
   }
-  100% {
-    transform: translateY(20%);
+
+  /* بطاقة مشروع (Project Card) تدعم الاتجاهين */
+.project-card {
+  /* 1. تحديد عرض الحافة من جهة البداية (Start) */
+  border-inline-start-width: 4px; 
+  
+  /* 2. جعل اللون شفافاً في الحالة العادية باستخدام كلاسات Tailwind */
+  @apply border-transparent; 
+  
+  /* 3. عند الحوم (Hover)، نغير لون الحافة فقط */
+  @apply hover:border-accent;
+  
+}
+
+  /* زر "اتصل بي" أو "تحميل CV" */
+  .btn-primary {
+    @apply inline-flex items-center justify-center rounded-full bg-accent px-6 py-3;
+    @apply text-sm font-semibold text-bg-main transition-all hover:scale-105 hover:bg-white;
+  }
+
+  /* نص برمجبي (Code Snippet) */
+  .code-text {
+    @apply font-mono text-sm text-accent bg-accent/10 px-2 py-1 rounded;
   }
 }
 
-@keyframes cursor-blink {
-  0%, 49% {
-    opacity: 1;
+/* 4. أدوات مساعدة (Utilities) - للمسات النهائية */
+@layer utilities {
+  /* خلفية متدرجة ناعمة تظهر خلف المحتوى */
+  .gradient-glow {
+    background: radial-gradient(circle at center, rgba(56, 189, 248, 0.15) 0%, transparent 70%);
   }
-  50%, 100% {
-    opacity: 0;
-  }
-}
 
-@keyframes terminal-line {
-  0% {
-    opacity: 0;
-    transform: translateY(-4px);
+  /* عكس الأيقونات في حالة اللغة العربية */
+  .rtl-flip {
+    @apply rtl:-scale-x-100;
   }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes fade-in {
-  0% {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.animate-cursor-blink {
-  animation: cursor-blink 1s infinite;
-}
-
-.animate-terminal-line {
-  animation: terminal-line 0.5s ease-out;
-}
-
-.animate-fade-in {
-  opacity: 0;
-  animation: fade-in 0.6s ease-out forwards;
 }
